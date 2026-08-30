@@ -1,3 +1,4 @@
+# GitHub API Client: Handles communication with the GitHub REST API so the MCP tools can access GitHub data.
 import os
 
 import httpx
@@ -9,7 +10,7 @@ class GitHubAPIError(Exception):
     """Raise when the Github API returns an error."""
 
 class GitHubClient:
-    """Clent for interacting with the GitHub REST API."""
+    """Client for interacting with the GitHub REST API."""
 
     BASE_URL = "https://api.github.com"
 

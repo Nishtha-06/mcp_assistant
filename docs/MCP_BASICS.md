@@ -719,3 +719,7 @@ We'll learn MCP practically:
 The first goal is simple:
 
 > **Build a tiny MCP server with one tool and understand exactly how the client, server, and tool communicate.**
+
+Server = WHO provides the capabilities
+Tool = WHAT capability is provided
+Client = WHO uses the capabilities
