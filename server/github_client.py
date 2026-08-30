@@ -25,8 +25,20 @@ class GitHubClient:
             "Accept":"application/vnd.github+json",
         }
 
+
+    def _validate_repo(self,owner: str,repo: str) -> None:
+        """Validate GitHub repository owner and repository name."""
+        if not owner or not owner.strip():
+            raise ValueError("Repository owner cannot be empty.")
+        if not repo or not repo.strip():
+            raise ValueError("Repository name cannot be empty.")
+        if "/" in owner or "/" in repo:
+            raise ValueError("Owner and repository name must not contain '/'.")
+
     def get_repository(self,owner:str,repo:str) -> dict:
         """Get information about a github repository."""
+
+        self._validate_repo(owner,repo)
         url = f"{self.BASE_URL}/repos/{owner}/{repo}" #https://api.github.com/repos/Nishtha-06/IntelliOrbit
 
         response = httpx.get(
@@ -44,6 +56,8 @@ class GitHubClient:
 
     def list_issue(self,owner: str,repo: str) ->list:
         """List issues from a GitHub repo"""
+
+        self._validate_repo(owner, repo)
 
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/issues"
 
@@ -64,6 +78,8 @@ class GitHubClient:
 
     def list_pull_requests(self,owner:str,repo:str) -> list:
         """List pull requests from github repo"""
+
+        self._validate_repo(owner, repo)
 
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/pulls"
 
