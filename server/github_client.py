@@ -25,6 +25,46 @@ class GitHubClient:
             "Accept":"application/vnd.github+json",
         }
 
+    def _handle_response_error(self,response: httpx.Response) -> None:
+        """Convert GitHub HTTP errors into self application errors."""
+
+        if response.status_code == 401:
+            raise GitHubAPIError("GitHub authentication failed.")
+        if response.status_code == 403:
+            raise GitHubAPIError("GitHub access denied or API rate limit exceeded.")
+        if response.status_code == 404:
+            raise GitHubAPIError("GitHub repository or resource was not found.")
+        if response.status_code >= 500:
+            raise GitHubAPIError("GitHub is currently unavailable. Please try again later.")
+        if response.status_code != 200:
+            raise GitHubAPIError(
+                f"GitHub API request failed with status {response.status_code}."
+            )
+
+    def _request(self,method: str,url: str,**kwargs) -> httpx.Response: #method likes GET, POST etc, url is GitHub URL, **kwargs = It allows us to pass additional request options.like params={"state": "open"} for issues
+        """Send a GitHub API request and Hnadle network errors."""
+
+        try:
+            response = httpx.request(
+                method,
+                url,
+                headers = self.header,
+                timeout = 10.0, # If GitHub doesn't respond within about 10 seconds, httpx can raise a timeout exception.
+                **kwargs,
+            )
+        except httpx.TimeoutException:
+            raise GitHubAPIError(
+                "Github request time out. Please try again."
+            )
+
+        except httpx.RequestError:
+            raise GitHubAPIError(
+                "Unable to connect to github. Please check your nextwork."
+            )
+
+        self._handle_response_error(response)
+
+        return response
 
     def _validate_repo(self,owner: str,repo: str) -> None:
         """Validate GitHub repository owner and repository name."""
@@ -47,11 +87,7 @@ class GitHubClient:
             timeout = 10.0,
         )
 
-        if response.status_code != 200:
-            raise GitHubAPIError(
-                f"Github API Error: {response.status_code} - "
-                f"{response.text}"
-            )
+        self._handle_response_error(response)
         return response.json()
 
     def list_issue(self,owner: str,repo: str) ->list:
@@ -68,11 +104,7 @@ class GitHubClient:
             timeout = 10.0,
         )
 
-        if response.status_code != 200:
-            raise GitHubAPIError(
-                f"GitHub API error: {response.status_code} - "
-                f"{response.text}"
-            )
+        self._handle_response_error(response)
 
         return response.json()
 
@@ -90,11 +122,7 @@ class GitHubClient:
             timeout = 10.0,
         )
 
-        if response.status_code != 200:
-            raise GitHubAPIError(
-                f"GitHub API error: {response.status_code} - "
-                f"{response.text}"
-            )
+        self._handle_response_error(response)
 
         return response.json()
 

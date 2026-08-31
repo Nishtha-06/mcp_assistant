@@ -1,3 +1,4 @@
+## GitHub Client Test: Verifies that the GitHub client can fetch repository, issue, and pull request data.
 from server.github_client import GitHubClient
 
 def main():
