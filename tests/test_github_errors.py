@@ -114,6 +114,33 @@ def test_network_error():
         print("PASS: Network error handled correctly.")
         print("Error:", error)
 
+def test_invalid_issue_number():
+    """Test that an invalid issue number is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.get_issue("Nishtha-06","mcp_assistant",-1)
+        print("FAIL: Invalid issue number was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid issue number rejected.")
+        print("Error:", error)
+
+def test_invalid_pull_request_number():
+    """Test that an invalid pull request number is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.get_pull_request("Nishtha-06","mcp_assistant",-1)
+        print("FAIL: Invalid pull request number was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid pull request number rejected.")
+        print("Error:", error)
+
+
 if __name__ == "__main__":
     test_invalid_repo()
     test_invalid_owner()
@@ -125,3 +152,6 @@ if __name__ == "__main__":
 
     test_timeout_error()
     test_network_error()
+
+    test_invalid_issue_number()
+    test_invalid_pull_request_number()

@@ -18,15 +18,28 @@ def get_repo(owner:str,repo:str) -> dict:
     return github.get_repository(owner,repo)
 
 @mcp.tool()
-def list_issues(owner: str, repo: str) -> list:
+def list_issues(owner: str, repo: str,limit: int = 10) -> list:
     """List open issues from a GitHub repository."""
-    return github.list_issue(owner, repo)
+    return github.list_issue(owner, repo,limit)
 
 
 @mcp.tool()
-def list_pull_requests(owner: str, repo: str) -> list:
+def list_pull_requests(owner: str, repo: str,limit: int=10) -> list:
     """List open pull requests from a GitHub repository."""
-    return github.list_pull_requests(owner, repo)
+    return github.list_pull_requests(owner, repo,limit)
+
+@mcp.toop()
+def get_issue(owner:str,repo: str,issue_number: int) -> dict:
+    """Get a specific issue from github repo"""
+
+    return github.get_issue(owner,repo,issue_number)
+
+@mcp.tool()
+def get_pull_request(owner: str,repo: str,pull_number: int) -> dict:
+    """Get a specific pull request from a GitHub repository."""
+
+    # Expose specific pull request lookup as an MCP tool.
+    return github.get_pull_request(owner, repo, pull_number)
 
 if __name__ == "__main__": # This block ensures that the server runs only when this script is executed directly(python server.py), not when imported as a module.
     mcp.run()

@@ -54,12 +54,12 @@ class GitHubClient:
             )
         except httpx.TimeoutException:
             raise GitHubAPIError(
-                "Github request time out. Please try again."
+                "Github request timed out. Please try again."
             )
 
         except httpx.RequestError:
             raise GitHubAPIError(
-                "Unable to connect to github. Please check your nextwork."
+                "Unable to connect to github. Please check your network."
             )
 
         self._handle_response_error(response)
@@ -81,48 +81,67 @@ class GitHubClient:
         self._validate_repo(owner,repo)
         url = f"{self.BASE_URL}/repos/{owner}/{repo}" #https://api.github.com/repos/Nishtha-06/IntelliOrbit
 
-        response = httpx.get(
-            url,
-            headers = self.header,
-            timeout = 10.0,
-        )
-
-        self._handle_response_error(response)
+        # Use the shared request method for consistent HTTP and network error handling.
+        response = self._request("GET", url)
         return response.json()
 
-    def list_issue(self,owner: str,repo: str) ->list:
+    def list_issue(self,owner: str,repo: str,limit: int = 10) ->list:
         """List issues from a GitHub repo"""
 
         self._validate_repo(owner, repo)
 
+        if limit < 1 or limit > 100:
+            raise ValueError("Limit must be between 1 and 100.")
+
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/issues"
 
-        response = httpx.get(
-            url,
-            headers = self.header,
-            params = {"state":"open"},
-            timeout = 10.0,
-        )
+        # Use the shared request method for consistent HTTP and network error handling.
+        response = self._request("GET", url,
+                                params={"state": "open", "per_page": limit})
 
-        self._handle_response_error(response)
 
         return response.json()
 
-    def list_pull_requests(self,owner:str,repo:str) -> list:
-        """List pull requests from github repo"""
+    def list_pull_requests(self,owner:str,repo:str,limit: int = 10) -> list:
+        """List open pull requests from github repo"""
 
         self._validate_repo(owner, repo)
 
+        if limit < 1 or limit > 100:
+            raise ValueError("Limit must be between 1 and 100.")
+
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/pulls"
 
-        response = httpx.get(
-            url,
-            headers = self.header,
-            params = {"state": "open"},
-            timeout = 10.0,
-        )
-
-        self._handle_response_error(response)
+        # Use the shared request method for consistent HTTP and network error handling.
+        response = self._request("GET", url,
+                                params={"state": "open", "per_page": limit})
 
         return response.json()
 
+    def get_issue(self,owner:str,repo: str,issue_number: int) -> dict:
+        """Get a specific issue from a GitHub repository."""
+
+        self._validate_repo(owner,repo)
+
+        if issue_number < 1:
+            raise ValueError("Issue number must be a positive integer.")
+        url = f"{self.BASE_URL}/repos/{owner}/{repo}/issues/{issue_number}"
+
+        #request one specific issue from GitHub API
+        response = self._request("GET", url)
+
+        return response.json()
+
+    def get_pull_request(self,owner:str,repo:str,pull_number:int) -> dict:
+        """Get a specific pull request from a Github repo"""
+        self._validate_repo(owner,repo)
+
+        if pull_number < 1:
+            raise ValueError("Pull request number must be greater than 0.")
+
+        url = f"{self.BASE_URL}/repos/{owner}/{repo}/pulls/{pull_number}"
+
+        # request one specific pull request from the Github API.
+        response = self._request("GET",url)
+
+        return response.json()
