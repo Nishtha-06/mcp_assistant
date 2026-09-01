@@ -1,7 +1,7 @@
 # MCP Server: Exposes GitHub operations as MCP tools that an MCP client/AI can call.
 
 from mcp.server.fastmcp import FastMCP #FastMCPServer is a convenient way to create an MCP server in Python.
-from server.github_client import GitHubClient
+from github_client import GitHubClient
 
 mcp = FastMCP("GitHub MCP Assistant") # Create an instance of the FastMCPServer class.  
 
@@ -18,17 +18,22 @@ def get_repo(owner:str,repo:str) -> dict:
     return github.get_repository(owner,repo)
 
 @mcp.tool()
-def list_issues(owner: str, repo: str,limit: int = 10) -> list:
+def search_repositories(query: str,limit: int = 10,page: int = 1) -> list: 
+    """Search GitHub repositories."""
+    return github.search_repositories(query,limit,page)
+
+@mcp.tool()
+def list_issues(owner: str, repo: str,limit: int = 10,page: int = 1) -> list:
     """List open issues from a GitHub repository."""
-    return github.list_issue(owner, repo,limit)
+    return github.list_issue(owner, repo,limit,page)
 
 
 @mcp.tool()
-def list_pull_requests(owner: str, repo: str,limit: int=10) -> list:
+def list_pull_requests(owner: str, repo: str,limit: int=10,page: int = 1) -> list:
     """List open pull requests from a GitHub repository."""
-    return github.list_pull_requests(owner, repo,limit)
+    return github.list_pull_requests(owner, repo,limit,page)
 
-@mcp.toop()
+@mcp.tool()
 def get_issue(owner:str,repo: str,issue_number: int) -> dict:
     """Get a specific issue from github repo"""
 

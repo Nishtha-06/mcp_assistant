@@ -166,6 +166,32 @@ def test_invalid_pull_request_page():
         print("PASS: Invalid pull request page rejected.")
         print("Error:", error)
 
+def test_invalid_search_query():
+    """Test that an empty search query is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.search_repositories("", limit=3, page=1)
+        print("FAIL: Empty search query was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid search query rejected.")
+        print("Error:", error)
+
+
+def test_invalid_search_page():
+    """Test that an invalid search page is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.search_repositories("python", limit=3, page=0)
+        print("FAIL: Invalid search page was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid search page rejected.")
+        print("Error:", error)
 
 if __name__ == "__main__":
     test_invalid_repo()
@@ -184,3 +210,6 @@ if __name__ == "__main__":
 
     test_invalid_issue_page()
     test_invalid_pull_request_page()
+
+    test_invalid_search_query()
+    test_invalid_search_page()

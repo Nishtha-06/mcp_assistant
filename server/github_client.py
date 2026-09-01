@@ -85,6 +85,32 @@ class GitHubClient:
         response = self._request("GET", url)
         return response.json()
 
+    def search_repositories(self,query: str,limit: int = 10,page: int = 1) -> list:
+        """Search GitHub repo using a search query."""
+
+        if not query or not query.strip():
+            raise ValueError("Search query cannot be empty.")
+
+        if limit < 1 or limit > 100:
+            raise ValueError("Limit must be between 1 and 100.")
+
+        if page < 1:
+            raise ValueError("Page number must be greater than 0.")
+
+        url = f"{self.BASE_URL}/search/repositories"
+
+        response = self._request(
+            "GET",
+            url,
+            params={
+                "q": query,
+                "per_page": limit,
+                "page": page,
+            },
+        )
+
+        return response.json()["items"]
+
     # page selects which batch of results to retrieve, while limit controls how many results are returned per page.
     def list_issue(self,owner: str,repo: str,limit: int = 10,page: int = 1) ->list:
         """List issues from a GitHub repo"""
