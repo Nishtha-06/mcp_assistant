@@ -85,7 +85,8 @@ class GitHubClient:
         response = self._request("GET", url)
         return response.json()
 
-    def list_issue(self,owner: str,repo: str,limit: int = 10) ->list:
+    # page selects which batch of results to retrieve, while limit controls how many results are returned per page.
+    def list_issue(self,owner: str,repo: str,limit: int = 10,page: int = 1) ->list:
         """List issues from a GitHub repo"""
 
         self._validate_repo(owner, repo)
@@ -93,16 +94,19 @@ class GitHubClient:
         if limit < 1 or limit > 100:
             raise ValueError("Limit must be between 1 and 100.")
 
+        if page < 1:
+            raise ValueError("Page number must be greater than 0.")
+
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/issues"
 
         # Use the shared request method for consistent HTTP and network error handling.
         response = self._request("GET", url,
-                                params={"state": "open", "per_page": limit})
+                                params={"state": "open", "per_page": limit,"page": page})
 
 
         return response.json()
 
-    def list_pull_requests(self,owner:str,repo:str,limit: int = 10) -> list:
+    def list_pull_requests(self,owner:str,repo:str,limit: int = 10,page:int = 1) -> list:
         """List open pull requests from github repo"""
 
         self._validate_repo(owner, repo)
@@ -110,11 +114,15 @@ class GitHubClient:
         if limit < 1 or limit > 100:
             raise ValueError("Limit must be between 1 and 100.")
 
+        # Validate the requested page number before sending it to GitHub.
+        if page < 1:
+            raise ValueError("Page number must be a positive integer.")
+
         url = f"{self.BASE_URL}/repos/{owner}/{repo}/pulls"
 
         # Use the shared request method for consistent HTTP and network error handling.
         response = self._request("GET", url,
-                                params={"state": "open", "per_page": limit})
+                                params={"state": "open", "per_page": limit,"page": page})
 
         return response.json()
 

@@ -140,6 +140,32 @@ def test_invalid_pull_request_number():
         print("PASS: Invalid pull request number rejected.")
         print("Error:", error)
 
+def test_invalid_issue_page():
+    """Test that an invalid issue page is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.list_issue("Nishtha-06", "mcp_assistant", page=0)
+        print("FAIL: Invalid issue page was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid issue page rejected.")
+        print("Error:", error)
+
+def test_invalid_pull_request_page():
+    """Test that an invalid pull request page is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.list_pull_requests("Nishtha-06", "mcp_assistant", page=0)
+        print("FAIL: Invalid pull request page was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid pull request page rejected.")
+        print("Error:", error)
+
 
 if __name__ == "__main__":
     test_invalid_repo()
@@ -155,3 +181,6 @@ if __name__ == "__main__":
 
     test_invalid_issue_number()
     test_invalid_pull_request_number()
+
+    test_invalid_issue_page()
+    test_invalid_pull_request_page()
