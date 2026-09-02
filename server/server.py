@@ -1,7 +1,7 @@
 # MCP Server: Exposes GitHub operations as MCP tools that an MCP client/AI can call.
 
 from mcp.server.fastmcp import FastMCP #FastMCPServer is a convenient way to create an MCP server in Python.
-from github_client import GitHubClient
+from server.github_client import GitHubClient
 
 mcp = FastMCP("GitHub MCP Assistant") # Create an instance of the FastMCPServer class.  
 
