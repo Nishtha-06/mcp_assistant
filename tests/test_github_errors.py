@@ -224,6 +224,40 @@ def test_valid_issue_state():
             print(f"FAIL: Valid issue state '{state}' was rejected.")
             print("Error:", error)
 
+# Pull request state tests: Verifies that supported PR states are accepted and invalid states are rejected.
+def test_invalid_pull_request_state():
+    """Test that an invalid pull request state is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.list_pull_requests(
+            "Nishtha-06", "mcp_assistant", limit=5, page=1, state="invalid_state"
+        )
+
+        print("FAIL: Invalid pull request state was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid pull request state rejected.")
+        print("Error:", error)
+
+def test_valid_pull_request_states():
+    """Test that a valid pull request state is accepted."""
+
+    client = GitHubClient()
+
+    for state in ("open", "closed", "all"):
+        try:
+            client.list_pull_requests(
+                "Nishtha-06", "mcp_assistant", limit=5, page=1, state=state
+            )
+            print(f"PASS: Pull request state '{state}' accepted.")
+
+        except ValueError as error:
+            print(f"FAIL: Valid pull request state '{state}' was rejected.")
+            print("Error:", error)
+
+
 if __name__ == "__main__":
     test_invalid_repo()
     test_invalid_owner()
@@ -247,3 +281,6 @@ if __name__ == "__main__":
 
     test_invalid_issue_state()
     test_valid_issue_state()
+
+    test_invalid_pull_request_state()
+    test_valid_pull_request_states()

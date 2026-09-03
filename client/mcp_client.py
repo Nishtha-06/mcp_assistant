@@ -306,6 +306,7 @@ async def interactive_menu(session):
         elif choice == "4":
             owner = input("Owner: ").strip()
             repo = input("Repository: ").strip()
+            state = input("State (open/closed/all, default open): ").strip().lower()
             limit = int(input("Limit: ").strip())
             page = int(input("Page: ").strip())
 
@@ -317,6 +318,7 @@ async def interactive_menu(session):
                     "repo": repo,
                     "limit": limit,
                     "page": page,
+                    "state": state,
                 },
             )
 

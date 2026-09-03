@@ -29,9 +29,9 @@ def list_issues(owner: str, repo: str,limit: int = 10,page: int = 1,state: str =
 
 
 @mcp.tool()
-def list_pull_requests(owner: str, repo: str,limit: int=10,page: int = 1) -> list:
+def list_pull_requests(owner: str, repo: str,limit: int=10,page: int = 1,state: str = "open") -> list:
     """List open pull requests from a GitHub repository."""
-    return github.list_pull_requests(owner, repo,limit,page)
+    return github.list_pull_requests(owner, repo,limit,page,state)
 
 @mcp.tool()
 def get_issue(owner:str,repo: str,issue_number: int) -> dict:

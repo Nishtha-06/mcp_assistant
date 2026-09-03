@@ -134,10 +134,13 @@ class GitHubClient:
 
         return response.json()
 
-    def list_pull_requests(self,owner:str,repo:str,limit: int = 10,page:int = 1) -> list:
+    def list_pull_requests(self,owner:str,repo:str,limit: int = 10,page:int = 1,state: str = "open") -> list:
         """List open pull requests from github repo"""
 
         self._validate_repo(owner, repo)
+
+        if state not in {"open", "closed", "all"}:
+            raise ValueError("State must be 'open', 'closed', or 'all'.")
 
         if limit < 1 or limit > 100:
             raise ValueError("Limit must be between 1 and 100.")
@@ -150,7 +153,7 @@ class GitHubClient:
 
         # Use the shared request method for consistent HTTP and network error handling.
         response = self._request("GET", url,
-                                params={"state": "open", "per_page": limit,"page": page})
+                                params={"state": state, "per_page": limit,"page": page})
 
         return response.json()
 
