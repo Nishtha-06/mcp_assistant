@@ -193,6 +193,37 @@ def test_invalid_search_page():
         print("PASS: Invalid search page rejected.")
         print("Error:", error)
 
+def test_invalid_issue_state():
+    """Test than an invalid issue state is rejected."""
+
+    client = GitHubClient()
+
+    try:
+        client.list_issue(
+            "Nishtha-06", "mcp_assistant", limit=3, page=1, state="invalid_state"
+        )
+        print("FAIL: Invalid issue state was accepted.")
+
+    except ValueError as error:
+        print("PASS: Invalid issue state rejected.")
+        print("Error:", error)
+
+def test_valid_issue_state():
+    """Test that a valid issue state is accepted."""
+
+    client = GitHubClient()
+
+    for state in ("open", "closed", "all"):
+        try:
+            client.list_issue(
+                "Nishtha-06", "mcp_assistant", limit=3, page=1, state=state
+            )
+            print(f"PASS: Issue state '{state}' accepted.")
+
+        except ValueError as error:
+            print(f"FAIL: Valid issue state '{state}' was rejected.")
+            print("Error:", error)
+
 if __name__ == "__main__":
     test_invalid_repo()
     test_invalid_owner()
@@ -213,3 +244,6 @@ if __name__ == "__main__":
 
     test_invalid_search_query()
     test_invalid_search_page()
+
+    test_invalid_issue_state()
+    test_valid_issue_state()

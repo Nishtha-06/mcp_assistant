@@ -10,7 +10,7 @@ from mcp.client.stdio import stdio_client # stdio = standard input/output. stdio
 server_params = StdioServerParameters(
     command="uv",
     args = ["run","python","-m","server.server"],
-) 
+)
 
 async def main():
     """Connect to the MCP server and list available tools."""
@@ -27,7 +27,7 @@ async def main():
             print("\nAvailable MCP tools:")
             print(f"Total tools: {len(tools.tools)}")
 
-            await interactive_menu(session) 
+            await interactive_menu(session)
 
 async def call_tool(session,tool_name: str,arguments: dict):
     """Call an MCP tool and return its result."""
@@ -47,7 +47,7 @@ def get_result_data(result):
                 if hasattr(content,"text"): #hasattr() = checks if the content object has a 'text' attribute.
                     return {"error": content.text}
         return None
-    
+
     if not result.content:
         return None
 
@@ -60,7 +60,7 @@ def get_result_data(result):
         return data[0] # If there's only one item in the data list, return that single item.
     return data # If there are multiple items in the data list, return the entire list.
 
-   
+
 
 def print_result(result):
     """Print an MCP tool result in a readable JSON format."""
@@ -128,6 +128,9 @@ def format_issues_result(result):
 
     if data is None:
         print("No issues returned.")
+        return
+    if "error" in data:
+        print(f"\nError: {data['error']}")
         return
 
     print("\nIssues")
@@ -211,11 +214,14 @@ def format_pull_request_result(result):
     print(f"Comments: {data.get('comments', 0)}")
     print(f"URL: {data.get('html_url', 'N/A')}")
 
-def get_integer_input(prompt):
+def get_integer_input(prompt,default = None):
     """Read a valid positive integer from the user."""
 
     while True:
         value = input(prompt).strip()
+
+        if not value and default is not None:
+            return default
 
         try:
             number = int(value)
@@ -252,7 +258,7 @@ async def interactive_menu(session):
 
             result = await call_tool(
                 session, # session = the current MCP client session.
-                "get_repo",{
+                "get_repo",{ # get_repo is tool name
                     "owner": owner,
                     "repo": repo
                 },
@@ -262,8 +268,8 @@ async def interactive_menu(session):
 
         elif choice == "2":
             query = input("Search query:").strip()
-            limit = get_integer_input("Limit: ")
-            page = get_integer_input("Page: ")
+            limit = get_integer_input("Limit (default 10): ", default=10)
+            page = get_integer_input("Page (default 1): ", default=1)
 
             result = await call_tool(
                 session,
@@ -279,6 +285,7 @@ async def interactive_menu(session):
         elif choice == "3":
             owner = input("Owner:").strip()
             repo = input("Repository: ").strip()
+            state = input("State (open/closed/all, default open): ").strip().lower()
             limit = int(input("Limit: ").strip())
             page = int(input("Page: ").strip())
 
@@ -290,6 +297,7 @@ async def interactive_menu(session):
                     "repo": repo,
                     "limit": limit,
                     "page": page,
+                    "state": state,
                 },
             )
 
@@ -354,8 +362,8 @@ async def interactive_menu(session):
 
         else:
             print("\nInvalid option. Please choose 1-7.")
-            
-               
+
+
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

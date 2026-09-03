@@ -23,9 +23,9 @@ def search_repositories(query: str,limit: int = 10,page: int = 1) -> list:
     return github.search_repositories(query,limit,page)
 
 @mcp.tool()
-def list_issues(owner: str, repo: str,limit: int = 10,page: int = 1) -> list:
+def list_issues(owner: str, repo: str,limit: int = 10,page: int = 1,state: str = "open") -> list:
     """List open issues from a GitHub repository."""
-    return github.list_issue(owner, repo,limit,page)
+    return github.list_issue(owner, repo,limit,page,state)
 
 
 @mcp.tool()
